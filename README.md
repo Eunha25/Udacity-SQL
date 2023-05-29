@@ -1,5 +1,5 @@
-# Udacity-SQL
+# Overview
 Repo for course https://www.udacity.com/course/sql-for-data-analysis--ud198
 
 ## Version
-MySQL: v15
+PostgreSQL: v15.2
