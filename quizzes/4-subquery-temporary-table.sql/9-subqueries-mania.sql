@@ -39,7 +39,6 @@ FROM (
 
 
 --2. For the region with the largest (sum) of sales total_amt_usd, how many total (count) orders were placed?
-
 SELECT r.name AS region_name, COUNT(o.id) AS count_order, t2.max_amt_usd
 FROM region r, sales_reps s, accounts a, orders o, 
      (SELECT MAX(sum_total) AS max_amt_usd
@@ -55,8 +54,8 @@ WHERE r.id = s.region_id AND a.sales_rep_id = s.id AND o.account_id = a.id
 GROUP BY r.name,t2.max_amt_usd
 HAVING SUM(o.total_amt_usd) = t2.max_amt_usd;
 
---3. How many accounts had more total purchases than the account name which has bought the most standard_qty paper throughout their lifetime as a customer?
-
+--3. How many accounts had more total purchases than the account name 
+-- which has bought the most standard_qty paper throughout their lifetime as a customer?
 SELECT a.name AS name_account, SUM(o.total) AS sum_total
 FROM accounts a
 JOIN orders o
@@ -72,8 +71,8 @@ HAVING SUM(o.total) > (SELECT total_sum
                         ORDER BY sum_standard_qty DESC
                         LIMIT 1) t1);
 
---4. For the customer that spent the most (in total over their lifetime as a customer) total_amt_usd, how many web_events did they have for each channel?
-
+--4. For the customer that spent the most (in total over their lifetime as a customer) total_amt_usd, 
+-- how many web_events did they have for each channel?
 SELECT a.name AS name_account, w.channel, COUNT(w.id) AS count_web
 FROM web_events w, accounts a
 WHERE a.id = w.account_id 
@@ -88,7 +87,6 @@ ORDER BY total_sum_usd DESC
 LIMIT 1) t1);
 
 --5. What is the lifetime average amount spent in terms of total_amt_usd for the top 10 total spending accounts?
-
 SELECT AVG(t1.total_amt_usd) AS avg_usd_top10
 FROM
 (SELECT a.name AS name_account, SUM(o.total_amt_usd) AS total_amt_usd
@@ -99,8 +97,8 @@ GROUP BY a.name
 ORDER BY total_amt_usd DESC
 LIMIT 10) t1;
 
---6. What is the lifetime average amount spent in terms of total_amt_usd, including only the companies that spent more per order, on average, than the average of all orders.
-
+--6. What is the lifetime average amount spent in terms of total_amt_usd, including only the companies that spent more per order, 
+-- on average, than the average of all orders.
 SELECT a.name AS name_account, AVG(o.total_amt_usd)
 FROM orders o
 JOIN accounts a
