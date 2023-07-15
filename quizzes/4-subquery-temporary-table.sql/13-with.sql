@@ -69,6 +69,50 @@ ORDER BY 2 DESC;
 
 --4. For the customer that spent the most (in total over their lifetime as a customer) 
 total_amt_usd, how many web_events did they have for each channel?
+WITH t1 AS 
+  (SELECT a.name AS name_account, SUM(o.total_amt_usd) AS sum_total
+  FROM accounts a
+  JOIN orders o
+  ON o.account_id = a.id
+  JOIN web_events w
+  ON w.account_id = a.id
+  GROUP BY 1
+  ORDER BY 2 DESC
+  LIMIT 1),
+t2 AS ( SELECT name_account
+       FROM t1)
+SELECT a.name AS name_customer, w.channel AS channel, COUNT(w.id) AS count_event
+FROM web_events w
+JOIN accounts a
+ON a.id = w.account_id
+JOIN orders o
+ON o.account_id = a.id
+WHERE  a.name = (SELECT * FROM t2)
+GROUP BY name_customer, channel;
 
+--5. What is the lifetime average amount spent in terms of total_amt_usd for the top 10 total spending accounts?
+WITH t1 AS 
+  (SELECT a.name AS name_account, SUM(o.total_amt_usd) AS sum_total
+  FROM accounts a
+  JOIN orders o
+  ON o.account_id = a.id
+  GROUP BY 1
+  ORDER BY sum_total DESC
+  LIMIT 10)
+SELECT AVG(t1.sum_total)
+FROM t1;
 
+--6. What is the lifetime average amount spent in terms of total_amt_usd, 
+including only the companies that spent more per order, on average, than the average of all orders.
 
+WITH t1 AS 
+  (SELECT a.name AS name_account, AVG(o.total_amt_usd) AS avg_total_order
+  FROM accounts a
+  JOIN orders o
+  ON o.account_id = a.id 
+  GROUP BY 1
+  HAVING AVG(o.total_amt_usd) > (SELECT AVG(total_amt_usd) AS avg_amt_orders
+       FROM orders)
+  ORDER BY 2 DESC)
+SELECT AVG(t1.avg_total_order)
+FROM t1;
