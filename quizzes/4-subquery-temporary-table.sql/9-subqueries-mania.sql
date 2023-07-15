@@ -107,3 +107,7 @@ GROUP BY a.name
 HAVING AVG(o.total_amt_usd) > (SELECT AVG(o.total_amt_usd) 
 FROM orders o)
 ORDER BY AVG(o.total_amt_usd) DESC
+
+
+
+
