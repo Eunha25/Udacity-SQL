@@ -46,4 +46,18 @@ GROUP BY t1.start_with)
 SELECT
 	starts_with,
     (number/(select count(*) from accounts)::float)*100
-FROM t2
+FROM t2;
+
+--4. Consider vowels as a, e, i, o, and u. What proportion of company names start with a vowel, 
+and what percent start with anything else?
+WITH sub AS
+	(SELECT SUM(vowels) AS vowels, SUM(other) AS other
+	 FROM (SELECT 
+  		CASE WHEN LEFT(UPPER(name),1) IN ('A','O','E','U','I') THEN 0
+     	ELSE 1 END AS vowels,
+        CASE WHEN LEFT(UPPER(name),1) IN ('A','O','E','U','I') THEN 1
+     	ELSE 0 END AS other
+		FROM accounts) t1)
+SELECT (vowels/(vowels + other)::float)*100 AS percentage_vowels,
+		(other/(vowels + other)::float)*100 AS percentage_other
+FROM sub;
